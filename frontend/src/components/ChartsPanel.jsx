@@ -5,18 +5,19 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, XAxis, YAx
 const COLORS = ['#4f46e5','#06b6d4','#f97316','#ef4444','#10b981','#8b5cf6','#f43f5e','#f59e0b']
 
 export default function ChartsPanel(){
-  const { transactions } = useTransactions()
+  const { transactions, monthFilter } = useTransactions()
 
   const expenseCats = useMemo(() => {
     const map = {}
-    transactions.filter(t => t.type === 'expense').forEach(t => { map[t.category] = (map[t.category] || 0) + Number(t.amount) })
+    const list = monthFilter === 'all' ? transactions : transactions.filter(t => t.date && t.date.slice(0,7) === monthFilter)
+    list.filter(t => t.type === 'expense').forEach(t => { map[t.category] = (map[t.category] || 0) + Number(t.amount) })
     return Object.entries(map).map(([key, value]) => ({ name: key, value }))
-  }, [transactions])
+  }, [transactions, monthFilter])
 
   const monthly = useMemo(() => {
     const map = {}
     transactions.forEach(t => {
-      const m = new Date(t.date).toISOString().slice(0,7)
+      const m = t.date ? t.date.slice(0,7) : 'unknown'
       if (!map[m]) map[m] = { month: m, income: 0, expense: 0 }
       if (t.type === 'income') map[m].income += Number(t.amount)
       else map[m].expense += Number(t.amount)

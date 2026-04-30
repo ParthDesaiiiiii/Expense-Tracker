@@ -4,15 +4,18 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { TransactionProvider } from './contexts/TransactionContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { BudgetProvider } from './contexts/BudgetContext'
 import './styles.css'
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <TransactionProvider>
-          <App />
-        </TransactionProvider>
+        <BudgetProvider>
+          <TransactionProvider>
+            <App />
+          </TransactionProvider>
+        </BudgetProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

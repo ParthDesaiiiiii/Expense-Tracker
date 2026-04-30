@@ -1,9 +1,13 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useTheme } from '../contexts/ThemeContext'
+import { useBudgets } from '../contexts/BudgetContext'
 
 export default function Sidebar() {
   const { theme, toggleTheme } = useTheme()
+  const [cat, setCat] = React.useState('Food')
+  const [amt, setAmt] = React.useState('')
+  const { setBudget } = useBudgets()
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -71,6 +75,14 @@ export default function Sidebar() {
                 } else alert('Invalid backup format')
               } catch (err) { alert('Restore failed: ' + err.message) }
             }}>Restore Latest</button>
+          </div>
+          <div style={{marginTop:10}}>
+            <div style={{fontSize:12,color:'var(--muted)',marginBottom:6}}>Set Budget</div>
+            <div style={{display:'flex',gap:8}}>
+              <input placeholder="Category" value={cat} onChange={e=>setCat(e.target.value)} style={{padding:8,borderRadius:8}} />
+              <input placeholder="Amount" value={amt} onChange={e=>setAmt(e.target.value)} style={{padding:8,borderRadius:8}} />
+              <button className="btn" onClick={() => { if (setBudget){ setBudget(cat, Number(amt)) ; setAmt('') } }}>Set</button>
+            </div>
           </div>
         </div>
       </div>

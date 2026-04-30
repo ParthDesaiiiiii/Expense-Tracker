@@ -1,0 +1,18 @@
+[
+  {
+    "type": "expense",
+    "amount": 45.99,
+    "category": "Shopping",
+    "description": "Formal Pant",
+    "date": "2026-04-30",
+    "id": "4caedf73-8fbe-434b-87bb-f2900a8c66c8"
+  },
+  {
+    "type": "income",
+    "amount": 1100,
+    "category": "Salary",
+    "description": "",
+    "date": "2026-04-30",
+    "id": "706934b4-5f5c-4835-a460-3ea3a9876d9e"
+  }
+]

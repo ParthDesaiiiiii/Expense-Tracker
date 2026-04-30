@@ -133,5 +133,18 @@ app.get('/api/backups/latest', (req, res) => {
   }
 })
 
+// Serve individual backup files for download/restore
+app.get('/backups/:file', (req, res) => {
+  try {
+    const file = req.params.file
+    const full = path.join(BACKUP_DIR, file)
+    if (!fs.existsSync(full)) return res.status(404).json({ error: 'Not found' })
+    res.sendFile(full)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to send backup' })
+  }
+})
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Recommendations API running on http://localhost:${PORT}`));

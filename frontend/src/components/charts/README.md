@@ -1,0 +1,1 @@
+Charts live in this folder. We use Recharts for pie and bar charts.

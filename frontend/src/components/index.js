@@ -1,0 +1,5 @@
+export { default as Sidebar } from './Sidebar'
+export { default as Dashboard } from './Dashboard'
+export { default as TransactionsList } from './TransactionsList'
+export { default as TransactionsForm } from './TransactionForm'
+export { default as RecommendationsPanel } from './RecommendationsPanel'

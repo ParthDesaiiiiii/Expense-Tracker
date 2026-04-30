@@ -4,6 +4,13 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+const fs = require('fs')
+const path = require('path')
+const BACKUP_DIR = path.join(__dirname, 'backups')
+
+if (!fs.existsSync(BACKUP_DIR)) {
+  fs.mkdirSync(BACKUP_DIR, { recursive: true })
+}
 
 // POST /api/recommendations
 // Expects: { income, expenses, savings, topCategories }
@@ -86,6 +93,45 @@ app.post('/api/recommendations', (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// Backup endpoints
+app.post('/api/backup', (req, res) => {
+  try {
+    const payload = req.body || {}
+    const ts = new Date().toISOString().replace(/[:.]/g, '-')
+    const filename = `backup-${ts}.json`
+    const full = path.join(BACKUP_DIR, filename)
+    fs.writeFileSync(full, JSON.stringify(payload, null, 2), 'utf8')
+    res.json({ ok: true, filename })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to write backup' })
+  }
+})
+
+app.get('/api/backups', (req, res) => {
+  try {
+    const files = fs.readdirSync(BACKUP_DIR).filter(f => f.endsWith('.json')).sort().reverse()
+    res.json({ files })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to list backups' })
+  }
+})
+
+app.get('/api/backups/latest', (req, res) => {
+  try {
+    const files = fs.readdirSync(BACKUP_DIR).filter(f => f.endsWith('.json')).sort().reverse()
+    if (files.length === 0) return res.status(404).json({ error: 'No backups' })
+    const latest = files[0]
+    const data = fs.readFileSync(path.join(BACKUP_DIR, latest), 'utf8')
+    res.setHeader('Content-Type', 'application/json')
+    res.send(data)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to load latest backup' })
+  }
+})
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Recommendations API running on http://localhost:${PORT}`));

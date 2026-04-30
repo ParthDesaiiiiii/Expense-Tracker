@@ -16,6 +16,24 @@ export function TransactionProvider({ children }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) setTransactions(JSON.parse(raw))
+      else {
+        // Attempt to restore from backend backup if localStorage is empty
+        ;(async () => {
+          try {
+            const res = await fetch('http://localhost:4000/api/backups/latest')
+            if (!res.ok) return
+            const text = await res.text()
+            const parsed = JSON.parse(text)
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setTransactions(parsed)
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed))
+            }
+          } catch (err) {
+            // backend not available — ignore
+            // console.log('No backend restore available', err)
+          }
+        })()
+      }
     } catch (err) {
       console.error('Failed to load transactions', err)
     }
@@ -23,6 +41,18 @@ export function TransactionProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions))
+    // Also attempt to save a backup to the backend if available (non-blocking)
+    ;(async () => {
+      try {
+        await fetch('http://localhost:4000/api/backup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(transactions)
+        })
+      } catch (err) {
+        // ignore if backend is not running
+      }
+    })()
   }, [transactions])
 
   function addTransaction(tx) {

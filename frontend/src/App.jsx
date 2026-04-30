@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard'
 import AddTransactionPage from './pages/AddTransactionPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import RecommendationsPage from './pages/RecommendationsPage'
+import BackupsPage from './pages/BackupsPage'
 
 export default function App(){
   return (
@@ -18,6 +19,7 @@ export default function App(){
             <Route path="/add" element={<AddTransactionPage/>} />
             <Route path="/analytics" element={<AnalyticsPage/>} />
             <Route path="/recommendations" element={<RecommendationsPage/>} />
+            <Route path="/backups" element={<BackupsPage/>} />
           </Routes>
         </motion.div>
       </main>

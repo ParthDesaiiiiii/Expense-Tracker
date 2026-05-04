@@ -19,7 +19,7 @@ export default function MonthSelector(){
   return (
     <div style={{display:'flex',alignItems:'center',gap:12}}>
       <label style={{color:'var(--muted)'}}>Month</label>
-      <select value={monthFilter} onChange={e=>setMonthFilter(e.target.value)} style={{padding:8,borderRadius:8,background:'transparent'}}>
+      <select className="month-select" value={monthFilter} onChange={e=>setMonthFilter(e.target.value)} style={{padding:8,borderRadius:8,background:'transparent'}}>
         {months.map(m => <option key={m} value={m}>{pretty(m)}</option>)}
       </select>
     </div>

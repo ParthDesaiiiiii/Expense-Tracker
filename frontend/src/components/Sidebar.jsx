@@ -69,29 +69,51 @@ export default function Sidebar() {
             }}>Save to Server</button>
             <button className="btn" onClick={async () => {
               try {
-                const res = await fetch('http://localhost:4000/api/backups/latest')
-                if (!res.ok) return alert('No backups found on server')
+                const res = await fetch('http://localhost:4000/api/backups/best')
+                if (!res.ok) return alert('No non-empty backups found on server')
                 const text = await res.text()
                 const parsed = JSON.parse(text)
                 if (Array.isArray(parsed)) {
-                  localStorage.setItem('et_transactions_v1', JSON.stringify(parsed))
+                  // merge with existing local data (dedupe by id)
+                  const local = JSON.parse(localStorage.getItem('et_transactions_v1') || '[]')
+                  const map = new Map()
+                  ;[...parsed, ...local].forEach(tx => { if (tx && tx.id) map.set(tx.id, tx) })
+                  const merged = Array.from(map.values()).sort((a,b)=> new Date(b.date) - new Date(a.date))
+                  localStorage.setItem('et_transactions_v1', JSON.stringify(merged))
                   window.location.reload()
                 } else alert('Invalid backup format')
               } catch (err) { alert('Restore failed: ' + err.message) }
             }}>Restore Latest</button>
+            <button className="btn" onClick={async () => {
+              if (!confirm('Restore first non-empty server backup and merge with local data?')) return
+              try{
+                const res = await fetch('http://localhost:4000/api/backups/best')
+                if (!res.ok) return alert('No non-empty backups found')
+                const text = await res.text()
+                const parsed = JSON.parse(text)
+                if (!Array.isArray(parsed)) return alert('Unexpected backup format')
+                const local = JSON.parse(localStorage.getItem('et_transactions_v1') || '[]')
+                const map = new Map()
+                ;[...parsed, ...local].forEach(tx => { if (tx && tx.id) map.set(tx.id, tx) })
+                const merged = Array.from(map.values()).sort((a,b)=> new Date(b.date) - new Date(a.date))
+                localStorage.setItem('et_transactions_v1', JSON.stringify(merged))
+                alert('Restored and merged backup. Reloading...')
+                window.location.reload()
+              }catch(e){ alert('Restore failed: ' + e.message) }
+            }}>Restore Best Backup</button>
           </div>
           <div style={{marginTop:10}}>
             <div style={{fontSize:12,color:'var(--muted)',marginBottom:6}}>Set Budget</div>
-            <div style={{display:'flex',gap:8}}>
-              <input placeholder="Category" value={cat} onChange={e=>setCat(e.target.value)} style={{padding:8,borderRadius:8}} />
-              <input placeholder="Amount" value={amt} onChange={e=>setAmt(e.target.value)} style={{padding:8,borderRadius:8}} />
+            <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+              <input className="sidebar-input" placeholder="Category" value={cat} onChange={e=>setCat(e.target.value)} />
+              <input className="sidebar-input" placeholder="Amount" value={amt} onChange={e=>setAmt(e.target.value)} />
               <button className="btn" onClick={() => { if (setBudget){ setBudget(cat, Number(amt)) ; setAmt('') } }}>Set</button>
             </div>
           </div>
           <div style={{marginTop:12}}>
             <div style={{fontSize:12,color:'var(--muted)',marginBottom:6}}>Create Savings Goal</div>
-            <input placeholder="Title (e.g. Laptop)" value={goalTitle} onChange={e=>setGoalTitle(e.target.value)} style={{width:'100%',padding:8,borderRadius:8,marginBottom:6}} />
-            <input placeholder="Target amount" type="number" value={goalTarget} onChange={e=>setGoalTarget(e.target.value)} style={{width:'100%',padding:8,borderRadius:8,marginBottom:6}} />
+            <input className="sidebar-input" placeholder="Title (e.g. Laptop)" value={goalTitle} onChange={e=>setGoalTitle(e.target.value)} />
+            <input className="sidebar-input" placeholder="Target amount" type="number" value={goalTarget} onChange={e=>setGoalTarget(e.target.value)} />
             <div style={{display:'flex',gap:8}}>
               <button className="btn small" onClick={()=>{ setGoalTitle(''); setGoalTarget(''); }}>Clear</button>
               <button className="btn primary" onClick={()=>{ if (!goalTitle || !goalTarget) return alert('Enter title and target'); addGoal({ title:goalTitle, target:Number(goalTarget), saved:0 }); setGoalTitle(''); setGoalTarget('') }}>Add Goal</button>

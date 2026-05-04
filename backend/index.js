@@ -133,6 +133,27 @@ app.get('/api/backups/latest', (req, res) => {
   }
 })
 
+// Return first non-empty backup (useful when many backups are empty)
+app.get('/api/backups/best', (req, res) => {
+  try {
+    const files = fs.readdirSync(BACKUP_DIR).filter(f => f.endsWith('.json')).sort().reverse()
+    for (const f of files){
+      try{
+        const txt = fs.readFileSync(path.join(BACKUP_DIR, f), 'utf8')
+        const parsed = JSON.parse(txt)
+        if (Array.isArray(parsed) && parsed.length > 0){
+          res.setHeader('Content-Type', 'application/json')
+          return res.send(txt)
+        }
+      }catch(e){ continue }
+    }
+    return res.status(404).json({ error: 'No non-empty backups found' })
+  } catch (err){
+    console.error(err)
+    res.status(500).json({ error: 'Failed to search backups' })
+  }
+})
+
 // Serve individual backup files for download/restore
 app.get('/backups/:file', (req, res) => {
   try {

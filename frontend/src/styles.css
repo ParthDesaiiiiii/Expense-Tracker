@@ -29,9 +29,17 @@ body{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvet
 .nav-item{padding:10px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
 .nav-item.active{background:rgba(255,255,255,0.02);color:#fff}
 .sidebar-footer{margin-top:auto}
-.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:inherit;cursor:pointer}
+.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:inherit;cursor:pointer;white-space:nowrap}
 .btn.primary{background:var(--accent);border:none;color:white}
 .btn.small{padding:6px 8px;font-size:12px}
+
+.month-select{min-width:140px;max-width:220px}
+
+.sidebar input[type='text'], .sidebar input[type='number']{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
+.sidebar .btn{flex-shrink:0}
+
+.sidebar-input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);margin-bottom:6px}
+
 
 .main-area{flex:1;padding:28px}
 .dashboard{display:flex;flex-direction:column;gap:20px}

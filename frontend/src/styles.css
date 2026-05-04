@@ -4,6 +4,7 @@
   --glass: rgba(255,255,255,0.03);
   --muted: #9aa4b2;
   --accent: #4f46e5;
+  --text: #e6eef8;
 }
 
 :root[data-theme='light']{
@@ -12,11 +13,12 @@
   --glass: rgba(255,255,255,0.7);
   --muted: #586074;
   --accent: #4f46e5;
+  --text: #0b1220;
 }
 
 *{box-sizing:border-box}
 html,body,#root{height:100%}
-body{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,var(--bg),#001529); color:#e6eef8}
+body{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,var(--bg),#001529); color:var(--text)}
 
 .app-root{display:flex; min-height:100vh}
 .sidebar{width:260px; padding:24px; display:flex; flex-direction:column; gap:20px; background:linear-gradient(180deg, rgba(255,255,255,0.03), transparent); backdrop-filter: blur(8px)}

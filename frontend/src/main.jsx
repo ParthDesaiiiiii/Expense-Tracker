@@ -5,6 +5,7 @@ import App from './App'
 import { TransactionProvider } from './contexts/TransactionContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { BudgetProvider } from './contexts/BudgetContext'
+import { SavingsGoalProvider } from './contexts/SavingsGoalContext'
 import './styles.css'
 
 createRoot(document.getElementById('root')).render(
@@ -12,9 +13,11 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <ThemeProvider>
         <BudgetProvider>
-          <TransactionProvider>
-            <App />
-          </TransactionProvider>
+          <SavingsGoalProvider>
+            <TransactionProvider>
+              <App />
+            </TransactionProvider>
+          </SavingsGoalProvider>
         </BudgetProvider>
       </ThemeProvider>
     </BrowserRouter>

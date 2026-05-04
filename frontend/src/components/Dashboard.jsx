@@ -4,6 +4,7 @@ import AddTransactionCard from './cards/AddTransactionCard'
 import TransactionsList from './TransactionsList'
 import ChartsPanel from './ChartsPanel'
 import MonthSelector from './MonthSelector'
+import SavingsGoalCard from './SavingsGoalCard'
 
 export default function Dashboard() {
   return (
@@ -15,6 +16,9 @@ export default function Dashboard() {
       <div className="top-row">
         <BalanceCards />
         <AddTransactionCard />
+      </div>
+      <div style={{marginTop:10}}>
+        <SavingsGoalCard />
       </div>
       <div className="middle-row">
         <ChartsPanel />

@@ -2,12 +2,16 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useTheme } from '../contexts/ThemeContext'
 import { useBudgets } from '../contexts/BudgetContext'
+import { useSavingsGoals } from '../contexts/SavingsGoalContext'
 
 export default function Sidebar() {
   const { theme, toggleTheme } = useTheme()
   const [cat, setCat] = React.useState('Food')
   const [amt, setAmt] = React.useState('')
   const { setBudget } = useBudgets()
+  const { addGoal } = useSavingsGoals()
+  const [goalTitle, setGoalTitle] = React.useState('')
+  const [goalTarget, setGoalTarget] = React.useState('')
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -82,6 +86,15 @@ export default function Sidebar() {
               <input placeholder="Category" value={cat} onChange={e=>setCat(e.target.value)} style={{padding:8,borderRadius:8}} />
               <input placeholder="Amount" value={amt} onChange={e=>setAmt(e.target.value)} style={{padding:8,borderRadius:8}} />
               <button className="btn" onClick={() => { if (setBudget){ setBudget(cat, Number(amt)) ; setAmt('') } }}>Set</button>
+            </div>
+          </div>
+          <div style={{marginTop:12}}>
+            <div style={{fontSize:12,color:'var(--muted)',marginBottom:6}}>Create Savings Goal</div>
+            <input placeholder="Title (e.g. Laptop)" value={goalTitle} onChange={e=>setGoalTitle(e.target.value)} style={{width:'100%',padding:8,borderRadius:8,marginBottom:6}} />
+            <input placeholder="Target amount" type="number" value={goalTarget} onChange={e=>setGoalTarget(e.target.value)} style={{width:'100%',padding:8,borderRadius:8,marginBottom:6}} />
+            <div style={{display:'flex',gap:8}}>
+              <button className="btn small" onClick={()=>{ setGoalTitle(''); setGoalTarget(''); }}>Clear</button>
+              <button className="btn primary" onClick={()=>{ if (!goalTitle || !goalTarget) return alert('Enter title and target'); addGoal({ title:goalTitle, target:Number(goalTarget), saved:0 }); setGoalTitle(''); setGoalTarget('') }}>Add Goal</button>
             </div>
           </div>
         </div>

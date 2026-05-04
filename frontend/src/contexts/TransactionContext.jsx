@@ -19,6 +19,7 @@ function mergeTransactions(local = [], remote = []){
 export function TransactionProvider({ children }) {
   const [transactions, setTransactions] = useState([])
   const [monthFilter, setMonthFilter] = useState('all')
+  const [monthlySummaries, setMonthlySummaries] = useState({})
 
   useEffect(() => {
     try {
@@ -85,6 +86,23 @@ export function TransactionProvider({ children }) {
     })()
   }, [transactions])
 
+  // compute monthly summaries whenever transactions change
+  useEffect(() => {
+    const map = {}
+    transactions.forEach(t => {
+      const m = t.date ? t.date.slice(0,7) : 'unknown'
+      if (!map[m]) map[m] = { income: 0, expense: 0 }
+      if (t.type === 'income') map[m].income += Number(t.amount)
+      else map[m].expense += Number(t.amount)
+    })
+    const summaries = {}
+    Object.entries(map).forEach(([m, v]) => {
+      summaries[m] = { income: v.income, expense: v.expense, savings: Math.max(0, v.income - v.expense) }
+    })
+    setMonthlySummaries(summaries)
+    try{ localStorage.setItem('et_monthly_summaries_v1', JSON.stringify(summaries)) }catch(e){}
+  }, [transactions])
+
   function addTransaction(tx) {
     const newTx = { ...tx, id: uuidv4() }
     setTransactions((s) => [newTx, ...s])
@@ -99,6 +117,6 @@ export function TransactionProvider({ children }) {
     setTransactions((s) => s.filter(t => t.id !== id))
   }
 
-  const value = { transactions, addTransaction, updateTransaction, deleteTransaction, setTransactions, monthFilter, setMonthFilter }
+  const value = { transactions, addTransaction, updateTransaction, deleteTransaction, setTransactions, monthFilter, setMonthFilter, monthlySummaries }
   return <TransactionContext.Provider value={value}>{children}</TransactionContext.Provider>
 }

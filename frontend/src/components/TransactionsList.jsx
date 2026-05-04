@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useTransactions } from '../contexts/TransactionContext'
+import EditTransactionModal from './EditTransactionModal'
 import dayjs from 'dayjs'
 
 export default function TransactionsList(){
@@ -15,6 +16,8 @@ export default function TransactionsList(){
     const list = monthFilter === 'all' ? transactions : transactions.filter(t => t.date && t.date.slice(0,7) === monthFilter)
     return list.slice().sort((a,b) => new Date(b.date) - new Date(a.date))
   }, [transactions, monthFilter])
+
+  const [editing, setEditing] = useState(null)
 
   return (
     <div className="transactions glass">
@@ -33,12 +36,14 @@ export default function TransactionsList(){
             </div>
             <div className="tx-right">
               <div className={`tx-amount ${tx.type === 'income' ? 'income' : 'expense'}`}>${Number(tx.amount).toFixed(2)}</div>
+              <button className="btn small" onClick={() => setEditing(tx)}>Edit</button>
               <button className="btn small" onClick={() => deleteTransaction(tx.id)}>Delete</button>
             </div>
           </div>
         ))}
         {sorted.length === 0 && <div className="empty">No transactions yet — add your first one.</div>}
       </div>
+      {editing && <EditTransactionModal tx={editing} onClose={() => setEditing(null)} />}
     </div>
   )
 }

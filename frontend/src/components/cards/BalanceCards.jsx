@@ -6,8 +6,7 @@ import { motion } from 'framer-motion'
 function format(n) { return n.toLocaleString(undefined, { style: 'currency', currency: 'USD' }) }
 
 export default function BalanceCards() {
-  const { transactions } = useTransactions()
-  const { monthFilter } = useTransactions()
+  const { transactions, monthFilter, monthlySummaries } = useTransactions()
   const { budgets } = useBudgets()
 
   const filtered = monthFilter === 'all' ? transactions : transactions.filter(t => t.date && t.date.slice(0,7) === monthFilter)
@@ -17,6 +16,13 @@ export default function BalanceCards() {
   const balance = income - expense
   const savings = Math.max(0, balance)
   const savingPct = income > 0 ? Math.round((savings / income) * 100) : 0
+  // derive this month and last month keys
+  const allMonths = Object.keys(monthlySummaries || {}).sort().reverse()
+  const currentKey = monthFilter === 'all' ? (allMonths[0] || null) : monthFilter
+  const idx = allMonths.indexOf(currentKey)
+  const lastKey = idx >= 0 && idx + 1 < allMonths.length ? allMonths[idx+1] : null
+  const thisMonth = currentKey ? (monthlySummaries[currentKey] || {income:0,expense:0,savings:0}) : null
+  const lastMonth = lastKey ? (monthlySummaries[lastKey] || {income:0,expense:0,savings:0}) : null
 
   return (
     <div className="balance-cards">
@@ -41,6 +47,28 @@ export default function BalanceCards() {
             <div key={k} style={{fontSize:12,color:'var(--muted)'}}>{k}: ${v}</div>
           ))}
         </div>
+        {thisMonth && lastMonth && (
+          <div style={{marginTop:12,fontSize:13}}>
+            <div style={{fontSize:12,color:'var(--muted)'}}>This month vs Last</div>
+            <div style={{display:'flex',gap:12,marginTop:8}}>
+              <div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>Income</div>
+                <div style={{fontWeight:700}}>${thisMonth.income.toFixed(2)}</div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>Last: ${lastMonth.income.toFixed(2)}</div>
+              </div>
+              <div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>Expense</div>
+                <div style={{fontWeight:700}}>${thisMonth.expense.toFixed(2)}</div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>Last: ${lastMonth.expense.toFixed(2)}</div>
+              </div>
+              <div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>Savings</div>
+                <div style={{fontWeight:700}}>${thisMonth.savings.toFixed(2)}</div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>Last: ${lastMonth.savings.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+        )}
       </motion.div>
     </div>
   )

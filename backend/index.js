@@ -17,77 +17,82 @@ if (!fs.existsSync(BACKUP_DIR)) {
 // Returns rule-based suggestions
 app.post('/api/recommendations', (req, res) => {
   try {
-    const { income = 0, expenses = 0, savings = 0, topCategories = [] } = req.body;
+    // Accept richer payload: transactions OR summary
+    const { transactions = null, income = 0, expenses = 0, savings = 0, topCategories = [] } = req.body;
 
-    const incomeNum = Number(income) || 0;
-    const expensesNum = Number(expenses) || 0;
-    const savingsNum = Number(savings) || Math.max(0, incomeNum - expensesNum);
+    // If transactions provided, compute monthly totals
+    let incomeNum = Number(income) || 0;
+    let expensesNum = Number(expenses) || 0;
+    let savingsNum = Number(savings) || 0;
+    let computedTop = Array.isArray(topCategories) ? topCategories : [];
 
-    const suggestions = [];
+    if (Array.isArray(transactions) && transactions.length > 0){
+      const map = {}
+      transactions.forEach(t => {
+        if (t.type === 'income') incomeNum += Number(t.amount || 0)
+        else expensesNum += Number(t.amount || 0)
+        if (t.category) map[t.category] = (map[t.category] || 0) + Number(t.amount || 0)
+      })
+      savingsNum = Math.max(0, incomeNum - expensesNum)
+      computedTop = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x[0])
+    }
 
-    // Savings recommendation
-    const savingRatio = incomeNum > 0 ? Math.round((savingsNum / incomeNum) * 100) : 0;
-    if (savingRatio < 20) {
-      suggestions.push({
-        type: 'savings',
-        message: `You're saving only ${savingRatio}% of your income. Aim for at least 20-30% by cutting non-essential spending or automating transfers.`
-      });
-    } else if (savingRatio < 50) {
-      suggestions.push({
-        type: 'savings',
-        message: `Good job — you're saving ${savingRatio}% of income. Consider increasing savings gradually toward 50% if your goals require it.`
-      });
+    // month-over-month change calculation requires monthlySummary in payload
+    // payload.monthlySummaries expected as { '2026-04': {income, expense}, ... }
+    const monthlySummaries = req.body.monthlySummaries || {}
+    const months = Object.keys(monthlySummaries).sort().reverse()
+    let monthChangePct = null
+    if (months.length >= 2){
+      const cur = monthlySummaries[months[0]] || { income:0, expense:0 }
+      const prev = monthlySummaries[months[1]] || { income:0, expense:0 }
+      const curExpense = Number(cur.expense || 0)
+      const prevExpense = Number(prev.expense || 0)
+      if (prevExpense > 0) monthChangePct = Math.round(((curExpense - prevExpense) / prevExpense) * 100)
+      else if (curExpense > 0) monthChangePct = 100
+    }
+
+    const suggestions = []
+
+    const savingRatio = incomeNum > 0 ? Math.round((savingsNum / incomeNum) * 100) : 0
+    if (savingRatio < 20){
+      suggestions.push({ type:'savings', message: `You're saving only ${savingRatio}% of your income. Aim for at least 20–30% by automating transfers and trimming discretionary spend.` })
+    } else if (savingRatio < 50){
+      suggestions.push({ type:'savings', message: `Good — ${savingRatio}% saved. If comfortable, gradually increase the saving rate toward long-term goals.` })
     } else {
-      suggestions.push({
-        type: 'savings',
-        message: `Excellent — ${savingRatio}% saved. Diversify savings across emergency funds and long-term investments.`
-      });
+      suggestions.push({ type:'savings', message: `Excellent — ${savingRatio}% saved. Consider diversifying to investments and retirement vehicles.` })
     }
 
-    // Investment suggestion
-    const investAmt = Math.max(0, Math.round((incomeNum - expensesNum) * 0.15));
-    suggestions.push({
-      type: 'investment',
-      message: `Consider allocating around $${investAmt}/month into low-cost index funds or ETFs. Start small with automated contributions.`
-    });
-
-    // Travel planning idea based on savings
-    if (savingsNum > 1000) {
-      const days = Math.min(10, Math.max(3, Math.floor(savingsNum / 300)));
-      suggestions.push({
-        type: 'travel',
-        message: `With current savings (~$${savingsNum}), you could plan a ${days}-day domestic trip or a short international trip if you find deals.`
-      });
+    // month change insight
+    if (monthChangePct !== null){
+      if (monthChangePct > 0) suggestions.push({ type:'trend', message: `Your expenses increased by ${monthChangePct}% compared to last month.` })
+      else if (monthChangePct < 0) suggestions.push({ type:'trend', message: `Good — your expenses decreased by ${Math.abs(monthChangePct)}% vs last month.` })
     }
 
-    // Category insight
-    if (Array.isArray(topCategories) && topCategories.length > 0) {
-      suggestions.push({
-        type: 'insight',
-        message: `High spending detected in: ${topCategories.slice(0,3).join(', ')}. Try targeted budgeting or alternative cheaper providers.`
-      });
+    // top categories share
+    if (Array.isArray(computedTop) && computedTop.length > 0){
+      // compute top2 share
+      const map = {}
+      transactions && transactions.forEach(t => { if (t.type === 'expense') map[t.category] = (map[t.category]||0) + Number(t.amount||0) })
+      const totalExpense = Object.values(map).reduce((s,v)=>s+v,0) || expensesNum
+      const sorted = Object.entries(map).sort((a,b)=>b[1]-a[1])
+      if (sorted.length > 0){
+        const top2 = sorted.slice(0,2)
+        const top2sum = top2.reduce((s,v)=>s+v[1],0)
+        const pct = totalExpense > 0 ? Math.round((top2sum/totalExpense)*100) : null
+        if (pct !== null) suggestions.push({ type:'category', message: `Top ${top2.length} spending categories (${top2.map(x=>x[0]).join(', ')}) account for ${pct}% of your total expenses.` })
+      }
     }
 
-    // Optimization tips
-    if (expensesNum > incomeNum * 0.8) {
-      suggestions.push({
-        type: 'optimization',
-        message: `Expenses are using over 80% of income. Review subscriptions and recurring charges; try a 30-day expense audit.`
-      });
+    // actionable tips
+    if (expensesNum > incomeNum * 0.8){
+      suggestions.push({ type:'optimization', message: `Expenses are using over 80% of income. Review subscriptions and recurring charges; consider a 30‑day expense audit.` })
     } else {
-      suggestions.push({
-        type: 'optimization',
-        message: `You're in a comfortable position. Consider rebalancing savings vs investments based on your horizon.`
-      });
+      suggestions.push({ type:'optimization', message: `You're in a comfortable position. Consider small investment allocations if you have spare cash.` })
     }
 
-    // Challenge suggestion
-    suggestions.push({
-      type: 'challenge',
-      message: `Try a no-spend weekend or reduce dining out for two weeks to see immediate savings improvements.`
-    });
+    suggestions.push({ type:'challenge', message: `Try a no‑spend weekend or swap two paid coffees for homebrew this week to save immediately.` })
 
-    res.json({ suggestions, savingRatio });
+    res.json({ suggestions, savingRatio, monthChangePct })
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

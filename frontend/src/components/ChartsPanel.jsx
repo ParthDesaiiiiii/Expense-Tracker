@@ -31,24 +31,24 @@ export default function ChartsPanel(){
         <h4>Expenses by Category</h4>
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>
-            <Pie data={expenseCats} dataKey="value" nameKey="name" outerRadius={80} innerRadius={40} paddingAngle={2}>
-              {expenseCats.map((entry, index) => <Cell key={`c-${index}`} fill={COLORS[index % COLORS.length]} />)}
+            <Pie data={expenseCats} dataKey="value" nameKey="name" outerRadius={80} innerRadius={40} paddingAngle={2} isAnimationActive={true}>
+              {expenseCats.map((entry, index) => <Cell key={`c-${index}`} fill={COLORS[index % COLORS.length]} className="pie-cell" />)}
             </Pie>
-            <Tooltip />
+            <Tooltip contentStyle={{background:'rgba(0,0,0,0.7)',border:'none'}} itemStyle={{color:'#fff'}} />
           </PieChart>
         </ResponsiveContainer>
       </div>
       <div className="chart-right">
         <h4>Monthly Income vs Expense</h4>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={monthly}>
+          <BarChart data={monthly} className="bar-chart">
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
-            <Tooltip />
+            <Tooltip wrapperStyle={{background:'rgba(0,0,0,0.7)',border:'none'}} contentStyle={{background:'transparent',border:'none'}} itemStyle={{color:'#fff'}} />
             <Legend />
-            <Bar dataKey="income" fill="#10b981" />
-            <Bar dataKey="expense" fill="#ef4444" />
+            <Bar dataKey="income" fill="#10b981" className="bar-income" />
+            <Bar dataKey="expense" fill="#ef4444" className="bar-expense" />
           </BarChart>
         </ResponsiveContainer>
       </div>

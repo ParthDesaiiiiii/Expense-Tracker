@@ -1,0 +1,90 @@
+[
+  {
+    "type": "expense",
+    "amount": 2.17,
+    "category": "Other",
+    "description": "Trash Bags",
+    "date": "2026-05-06",
+    "id": "28fc4a57-c051-4c4c-ba1a-d2713e466631"
+  },
+  {
+    "type": "income",
+    "amount": 24,
+    "category": "Salary",
+    "description": "",
+    "date": "2026-05-05",
+    "id": "95ac6ac7-d597-44ff-970a-063266fc1e9e"
+  },
+  {
+    "type": "income",
+    "amount": 240,
+    "category": "Salary",
+    "description": "",
+    "date": "2026-05-05",
+    "id": "43b4978d-6ea2-47ea-b251-828c8c376324"
+  },
+  {
+    "type": "expense",
+    "amount": 637.5,
+    "category": "Rent",
+    "description": "",
+    "date": "2026-05-04",
+    "id": "a6aa0678-0172-496c-91f8-3dd09435cb2b"
+  },
+  {
+    "type": "income",
+    "amount": 280.27,
+    "category": "Salary",
+    "description": "Savings",
+    "date": "2026-05-04",
+    "id": "f7974af5-7e71-4bb6-8665-32c86bbb3381"
+  },
+  {
+    "type": "expense",
+    "amount": 2.25,
+    "category": "Food",
+    "description": "Tomato",
+    "date": "2026-05-04",
+    "id": "62a44113-4b31-4559-b1e2-44873169a6df"
+  },
+  {
+    "type": "expense",
+    "amount": 1,
+    "category": "Food",
+    "description": "Bread",
+    "date": "2026-05-04",
+    "id": "a8ef5f1a-37ec-4ee4-b543-444489e44a4d"
+  },
+  {
+    "type": "expense",
+    "amount": 1.5,
+    "category": "Other",
+    "description": "Soap",
+    "date": "2026-05-02",
+    "id": "ea7f7861-32d2-4092-a4ee-f899f1f78850"
+  },
+  {
+    "type": "expense",
+    "amount": 2,
+    "category": "Food",
+    "description": "Milk",
+    "date": "2026-05-02",
+    "id": "01eb84da-c0ed-40de-90dd-e5d66e76abd0"
+  },
+  {
+    "type": "expense",
+    "amount": 45.99,
+    "category": "Shopping",
+    "description": "Formal Pant",
+    "date": "2026-04-30",
+    "id": "4caedf73-8fbe-434b-87bb-f2900a8c66c8"
+  },
+  {
+    "type": "income",
+    "amount": 1100,
+    "category": "Salary",
+    "description": "",
+    "date": "2026-04-30",
+    "id": "706934b4-5f5c-4835-a460-3ea3a9876d9e"
+  }
+]

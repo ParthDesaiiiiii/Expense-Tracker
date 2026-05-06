@@ -33,6 +33,9 @@ body{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvet
 .btn.primary{background:var(--accent);border:none;color:white}
 .btn.small{padding:6px 8px;font-size:12px}
 
+.alert-item{padding:10px;border-radius:8px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+.alert-item .btn.small{padding:6px 8px}
+
 .month-select{min-width:140px;max-width:220px}
 
 .sidebar input[type='text'], .sidebar input[type='number']{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}

@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { useTheme } from '../contexts/ThemeContext'
 import { useBudgets } from '../contexts/BudgetContext'
 import { useSavingsGoals } from '../contexts/SavingsGoalContext'
+import AlertsPane from './AlertsPane'
 
 export default function Sidebar() {
   const { theme, toggleTheme } = useTheme()
@@ -122,6 +123,7 @@ export default function Sidebar() {
             <button className="btn primary" onClick={()=>{ if (!goalTitle || !goalTarget) return alert('Enter title and target'); addGoal({ title:goalTitle, target:Number(goalTarget), saved:0 }); setGoalTitle(''); setGoalTarget('') }}>Add Goal</button>
           </div>
         </div>
+        <AlertsPane />
       </div>
     </aside>
   )

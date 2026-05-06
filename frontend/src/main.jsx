@@ -7,6 +7,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { BudgetProvider } from './contexts/BudgetContext'
 import { SavingsGoalProvider } from './contexts/SavingsGoalContext'
 import ErrorBoundary from './components/ErrorBoundary'
+import { AlertProvider } from './contexts/AlertContext'
 import './styles.css'
 
 createRoot(document.getElementById('root')).render(
@@ -16,9 +17,11 @@ createRoot(document.getElementById('root')).render(
         <BudgetProvider>
           <SavingsGoalProvider>
             <TransactionProvider>
-              <ErrorBoundary>
-                <App />
-              </ErrorBoundary>
+              <AlertProvider>
+                <ErrorBoundary>
+                  <App />
+                </ErrorBoundary>
+              </AlertProvider>
             </TransactionProvider>
           </SavingsGoalProvider>
         </BudgetProvider>

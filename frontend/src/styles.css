@@ -64,10 +64,17 @@ body{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvet
 .chart-left,.chart-right{flex:1}
 .charts .recharts-surface{overflow:visible}
 .pie-cell{transition:transform 160ms ease}
-.pie-cell:hover{transform:scale(1.06)}
+  .glass{background:rgba(255,255,255,0.03);backdrop-filter: blur(6px)}
 .bar-chart .recharts-rectangle{transition:transform 140ms ease}
 .bar-chart .recharts-rectangle:hover{transform:scale(1.04);cursor:pointer}
 .recharts-tooltip-wrapper{pointer-events:none}
+
+/* Ensure tooltip background is dark/translucent (override default white) */
+.recharts-default-tooltip, .recharts-tooltip-wrapper div {
+  background: rgba(0,0,0,0.7) !important;
+  color: #fff !important;
+  border: none !important;
+}
 
 /* prevent color/gradient jumps while scrolling by locking main background and giving panels their own glass */
 .main-area{background:transparent}
@@ -99,6 +106,8 @@ body{font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvet
   .middle-row{flex-direction:column}
 }
 
+/* Ensure no background color shifts on scroll: lock fixed background layer */
+body::before{ content: ''; position: fixed; inset: 0; background: var(--bg); z-index: -1 }
 /* Sidebar helpers */
 .sidebar-footer{margin-top:auto}
 .sidebar-section{margin-bottom:12px}

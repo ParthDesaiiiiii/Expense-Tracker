@@ -8,6 +8,7 @@ import { BudgetProvider } from './contexts/BudgetContext'
 import { SavingsGoalProvider } from './contexts/SavingsGoalContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import { AlertProvider } from './contexts/AlertContext'
+import { RecurringProvider } from './contexts/RecurringContext'
 import './styles.css'
 
 createRoot(document.getElementById('root')).render(
@@ -17,11 +18,13 @@ createRoot(document.getElementById('root')).render(
         <BudgetProvider>
           <SavingsGoalProvider>
             <TransactionProvider>
-              <AlertProvider>
-                <ErrorBoundary>
-                  <App />
-                </ErrorBoundary>
-              </AlertProvider>
+              <RecurringProvider>
+                <AlertProvider>
+                  <ErrorBoundary>
+                    <App />
+                  </ErrorBoundary>
+                </AlertProvider>
+              </RecurringProvider>
             </TransactionProvider>
           </SavingsGoalProvider>
         </BudgetProvider>

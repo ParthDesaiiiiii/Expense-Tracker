@@ -73,6 +73,20 @@ export default function Sidebar() {
                   else alert('Failed to save backup')
                 } catch (err) { alert('Save failed: ' + err.message) }
               }}>💾 Save</button>
+                <button className="btn" onClick={async () => {
+                  try{
+                    // one-click force restore from public/force-restore.json (for recovery)
+                    const res = await fetch('/force-restore.json')
+                    if (!res.ok) return alert('No force-restore file found on the frontend server')
+                    const parsed = await res.json()
+                    if (!Array.isArray(parsed) || parsed.length === 0) return alert('Force file empty or invalid')
+                    const now = new Date().toISOString().replace(/[:.]/g,'-')
+                    try{ const cur = localStorage.getItem('et_transactions_v1') || '[]'; localStorage.setItem('et_transactions_v1_backup_before_force_restore_' + now, cur) }catch(e){}
+                    localStorage.setItem('et_transactions_v1', JSON.stringify(parsed))
+                    alert('Force-restore applied (' + parsed.length + ' transactions). The app will reload.')
+                    window.location.reload()
+                  }catch(e){ alert('Force-restore failed: '+ e.message) }
+                }}>⚠️ Force Restore</button>
               <button className="btn" onClick={async () => {
                 try {
                   const res = await fetch('http://localhost:4000/api/backups/latest')

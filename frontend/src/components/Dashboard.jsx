@@ -7,6 +7,7 @@ import MonthSelector from './MonthSelector'
 import { downloadCSV, downloadPDF } from '../utils/exportUtils'
 import { useTransactions } from '../contexts/TransactionContext'
 import SavingsGoalCard from './SavingsGoalCard'
+import ProfileCard from './ProfileCard'
 
 export default function Dashboard() {
   const { transactions, monthFilter } = useTransactions()
@@ -28,6 +29,7 @@ export default function Dashboard() {
       </div>
       <div className="top-row">
         <BalanceCards />
+        <ProfileCard />
         <AddTransactionCard />
       </div>
       <div style={{marginTop:10}}>
